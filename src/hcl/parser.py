@@ -71,6 +71,10 @@ class HclParser(object):
         'NE',
         'LE',
         'GE',
+        'AND',
+        'OR',
+        'NOT',
+        'EQGT'
     )
 
     #
@@ -168,29 +172,98 @@ class HclParser(object):
 
     def p_objectkey_1(self, p):
         '''
-        objectkey : IDENTIFIER ADD number
-                  | number ADD IDENTIFIER
-                  | IDENTIFIER MINUS number
-                  | number MINUS IDENTIFIER
-                  | IDENTIFIER MULTIPLY number
-                  | number MULTIPLY IDENTIFIER
-                  | IDENTIFIER DIVIDE number
-                  | number DIVIDE IDENTIFIER
+        objectkey : NOT objectkey
         '''
         if DEBUG:
             self.print_p(p)
-        p[0] = (str(p[1]), str(p[2]), str(p[3]))
+        p[0] = p[1] + self.flatten(p[2])
 
-    def p_objectbrackets_0(self, p):
-        "objectbrackets : IDENTIFIER LEFTBRACKET objectkey RIGHTBRACKET"
+    def p_objectkey_2(self, p):
+        '''
+        objectkey : objectkey MULTIPLY IDENTIFIER
+                  | objectkey ADD objectkey
+                  | objectkey MINUS objectkey
+                  | objectkey MULTIPLY objectkey
+                  | objectkey DIVIDE objectkey
+                  | objectkey ADD function
+                  | objectkey MINUS function
+                  | objectkey MULTIPLY function
+                  | objectkey DIVIDE function
+                  | IDENTIFIER ADD number
+                  | IDENTIFIER ADD IDENTIFIER
+                  | IDENTIFIER MINUS number
+                  | IDENTIFIER MULTIPLY number
+                  | IDENTIFIER MULTIPLY IDENTIFIER
+                  | IDENTIFIER DIVIDE number
+                  | number ADD IDENTIFIER
+                  | number MINUS IDENTIFIER
+                  | number MULTIPLY IDENTIFIER
+                  | number DIVIDE IDENTIFIER
+                  | function ADD function
+                  | function MINUS function
+                  | function MULTIPLY function
+                  | function DIVIDE function
+                  | function MULTIPLY IDENTIFIER
+                  | function ADD number
+        '''
         if DEBUG:
             self.print_p(p)
-        p[0] = p[1] + p[2] + p[3] + p[4]
+        p[0] = self.flatten(p[1]) + " " + str(p[2]) + " " + self.flatten(p[3])
+
+    def p_objectkey_3(self, p):
+        '''
+        objectkey : objectkey LEFTBRACKET listitem RIGHTBRACKET
+        '''
+        if DEBUG:
+            self.print_p(p)
+        p[0] = p[1] + p[2] + str(p[3]) + p[4]
+
+    def p_forexp_0(self, p):
+        '''
+        forexp : LEFTBRACKET objectkey objectkey objectkey objectkey COLON forexp RIGHTBRACKET
+                       | LEFTBRACKET objectkey listitems objectkey objectkey COLON forexp RIGHTBRACKET
+                       | LEFTBRACKET objectkey objectkey objectkey function COLON function RIGHTBRACKET
+                       | LEFTBRACKET objectkey objectkey objectkey ternary COLON object RIGHTBRACKET
+                       | LEFTBRACKET objectkey objectkey objectkey objectkey COLON objectkey RIGHTBRACKET
+                       | LEFTBRACKET objectkey objectkey objectkey objectkey COLON function RIGHTBRACKET
+                       | LEFTBRACKET objectkey objectkey objectkey objectkey COLON object RIGHTBRACKET
+        '''
+        if DEBUG:
+            self.print_p(p)
+
+        p[0] = p[1] + self.flatten(p[2]) + " " + self.flatten(p[3]) + " " + self.flatten(p[4]) + " " + self.flatten(p[5]) + p[6] + self.flatten(p[7]) + p[8]
+
+    def p_forexp_1(self, p):
+        '''
+        forexp : LEFTBRACE objectkey objectkey objectkey objectkey COLON objectkey EQGT objectkey RIGHTBRACE
+                       | LEFTBRACE objectkey objectkey objectkey objectkey COLON objectkey EQGT function RIGHTBRACE
+                       | LEFTBRACKET objectkey objectkey objectkey objectkey COLON objectkey objectkey booleanexp RIGHTBRACKET
+        '''
+        if DEBUG:
+            self.print_p(p)
+
+        p[0] = p[1] + self.flatten(p[2]) + " " + self.flatten(p[3]) + " " + self.flatten(p[4]) + " " + self.flatten(p[5]) + p[6] + self.flatten(p[7]) + self.flatten(p[8]) + self.flatten(p[9]) + p[10]
+
+    def p_objectbrackets_0(self, p):
+        '''
+        objectbrackets : IDENTIFIER LEFTBRACKET objectbrackets RIGHTBRACKET
+                       | IDENTIFIER LEFTBRACKET objectkey RIGHTBRACKET
+                       | IDENTIFIER LEFTBRACKET NUMBER RIGHTBRACKET
+                       | IDENTIFIER LEFTBRACKET function RIGHTBRACKET
+                       | listitem LEFTBRACKET objectkey RIGHTBRACKET
+                       | listitem LEFTBRACKET number RIGHTBRACKET
+                       | function LEFTBRACKET objectkey RIGHTBRACKET
+                       | function LEFTBRACKET number RIGHTBRACKET
+        '''
+        if DEBUG:
+            self.print_p(p)
+        p[0] = self.flatten(p[1]) + p[2] + self.flatten(p[3]) + p[4]
 
     def p_objectbrackets_1(self, p):
         '''
         objectbrackets : IDENTIFIER LEFTBRACKET objectkey RIGHTBRACKET PERIOD IDENTIFIER
                        | IDENTIFIER LEFTBRACKET NUMBER RIGHTBRACKET PERIOD IDENTIFIER
+                       | IDENTIFIER LEFTBRACKET MULTIPLY RIGHTBRACKET PERIOD IDENTIFIER
         '''
         if DEBUG:
             self.print_p(p)
@@ -206,8 +279,11 @@ class HclParser(object):
                    | objectkey EQUAL objectkey
                    | objectkey EQUAL list
                    | objectkey EQUAL objectbrackets
+                   | objectkey EQUAL listitem
                    | objectkey EQUAL function
                    | objectkey EQUAL booleanexp
+                   | objectkey EQUAL ternary
+                   | objectkey EQUAL forexp
                    | objectkey COLON number
                    | objectkey COLON BOOL
                    | objectkey COLON STRING
@@ -217,6 +293,7 @@ class HclParser(object):
                    | objectkey COLON list
                    | objectkey COLON objectbrackets
                    | objectkey COLON booleanexp
+                   | objectkey COLON ternary
         '''
         if DEBUG:
             self.print_p(p)
@@ -228,38 +305,92 @@ class HclParser(object):
             self.print_p(p)
         p[0] = p[1]
 
-    def p_objectitem_2(self, p):
+    def p_ternary_0(self, p):
         '''
-        objectitem : objectkey EQUAL objectkey QMARK objectkey COLON objectkey
-                   | objectkey EQUAL objectkey QMARK objectkey COLON number
-                   | objectkey EQUAL objectkey QMARK objectkey COLON BOOL
-                   | objectkey EQUAL objectkey QMARK objectkey COLON function
-                   | objectkey EQUAL objectkey QMARK number COLON objectkey
-                   | objectkey EQUAL objectkey QMARK BOOL COLON objectkey
-                   | objectkey EQUAL objectkey QMARK function COLON objectkey
-                   | objectkey EQUAL objectkey QMARK number COLON number
-                   | objectkey EQUAL objectkey QMARK number COLON BOOL
-                   | objectkey EQUAL objectkey QMARK number COLON function
-                   | objectkey EQUAL objectkey QMARK BOOL COLON number
-                   | objectkey EQUAL objectkey QMARK BOOL COLON function
-                   | objectkey EQUAL objectkey QMARK BOOL COLON BOOL
-                   | objectkey EQUAL booleanexp QMARK objectkey COLON objectkey
-                   | objectkey EQUAL booleanexp QMARK objectkey COLON number
-                   | objectkey EQUAL booleanexp QMARK objectkey COLON BOOL
-                   | objectkey EQUAL booleanexp QMARK objectkey COLON function
-                   | objectkey EQUAL booleanexp QMARK number COLON objectkey
-                   | objectkey EQUAL booleanexp QMARK BOOL COLON objectkey
-                   | objectkey EQUAL booleanexp QMARK function COLON objectkey
-                   | objectkey EQUAL booleanexp QMARK number COLON number
-                   | objectkey EQUAL booleanexp QMARK number COLON BOOL
-                   | objectkey EQUAL booleanexp QMARK number COLON function
-                   | objectkey EQUAL booleanexp QMARK BOOL COLON number
-                   | objectkey EQUAL booleanexp QMARK BOOL COLON function
-                   | objectkey EQUAL booleanexp QMARK BOOL COLON BOOL
+        ternary : objectkey QMARK ternary COLON ternary
+                | objectkey QMARK objectkey COLON ternary
+                | objectkey QMARK number COLON ternary
+                | objectkey QMARK BOOL COLON ternary
+                | objectkey QMARK function COLON ternary
+                | objectkey QMARK ternary COLON number
+                | objectkey QMARK ternary COLON objectkey
+                | objectkey QMARK ternary COLON booleanexp
         '''
         if DEBUG:
             self.print_p(p)
-        p[0] = (p[1], p[3] + p[4] + str(p[5]) + p[6] + str(p[7]))
+        p[0] = self.flatten(p[1]) + p[2] + self.flatten(p[3]) + p[4] + self.flatten(p[5])
+
+    def p_ternary_1(self, p):
+        '''
+        ternary : booleanexp QMARK objectkey COLON objectkey
+                | objectkey QMARK objectbrackets COLON objectkey
+                | objectkey QMARK objectbrackets COLON objectbrackets
+                | objectkey QMARK objectkey COLON objectkey
+                | objectkey QMARK listitem COLON listitem
+                | objectkey QMARK objectkey COLON number
+                | objectkey QMARK objectkey COLON BOOL
+                | objectkey QMARK objectkey COLON function
+                | objectkey QMARK objectkey COLON booleanexp
+                | objectkey QMARK number COLON objectkey
+                | objectkey QMARK BOOL COLON objectkey
+                | objectkey QMARK function COLON function
+                | objectkey QMARK function COLON objectkey
+                | objectkey QMARK function COLON number
+                | objectkey QMARK number COLON number
+                | objectkey QMARK number COLON BOOL
+                | objectkey QMARK number COLON function
+                | objectkey QMARK BOOL COLON number
+                | objectkey QMARK BOOL COLON function
+                | objectkey QMARK BOOL COLON BOOL
+                | objectkey QMARK BOOL COLON booleanexp
+                | objectkey QMARK booleanexp COLON objectkey
+                | objectkey QMARK booleanexp COLON number
+                | NUMBER QMARK function COLON listitem
+                | NUMBER QMARK function COLON objectkey
+                | NUMBER QMARK objectkey COLON objectkey
+                | NUMBER QMARK objectkey COLON NUMBER
+                | NUMBER QMARK NUMBER COLON NUMBER
+                | BOOL QMARK BOOL COLON BOOL
+                | BOOL QMARK objectkey COLON objectkey
+                | booleanexp QMARK listitem COLON listitem
+                | booleanexp QMARK listitem COLON function
+                | booleanexp QMARK objectkey COLON number
+                | booleanexp QMARK objectkey COLON BOOL
+                | booleanexp QMARK objectkey COLON function
+                | booleanexp QMARK function COLON objectkey
+                | booleanexp QMARK function COLON number
+                | booleanexp QMARK function COLON BOOL
+                | booleanexp QMARK number COLON objectkey
+                | booleanexp QMARK number COLON number
+                | booleanexp QMARK number COLON BOOL
+                | booleanexp QMARK number COLON function
+                | booleanexp QMARK BOOL COLON objectkey
+                | booleanexp QMARK BOOL COLON number
+                | booleanexp QMARK BOOL COLON function
+                | booleanexp QMARK BOOL COLON BOOL
+                | booleanexp QMARK ternary COLON objectkey
+
+                | function QMARK listitem COLON listitem
+                | function QMARK objectkey COLON number
+                | function QMARK objectkey COLON BOOL
+                | function QMARK objectkey COLON function
+                | function QMARK function COLON objectkey
+                | function QMARK function COLON number
+                | function QMARK function COLON BOOL
+                | function QMARK number COLON objectkey
+                | function QMARK number COLON number
+                | function QMARK number COLON BOOL
+                | function QMARK number COLON function
+                | function QMARK BOOL COLON objectkey
+                | function QMARK BOOL COLON number
+                | function QMARK BOOL COLON function
+                | function QMARK BOOL COLON BOOL
+                | function QMARK ternary COLON objectkey
+                | list QMARK list COLON objectkey
+        '''
+        if DEBUG:
+            self.print_p(p)
+        p[0] = self.flatten(p[1]) + p[2] + self.flatten(p[3]) + p[4] + self.flatten(p[5])
 
     def p_operator_0(self, p):
         '''
@@ -269,6 +400,8 @@ class HclParser(object):
                  | GT
                  | LE
                  | GE
+                 | AND
+                 | OR
         '''
         if DEBUG:
             self.print_p(p)
@@ -276,13 +409,27 @@ class HclParser(object):
 
     def p_booleanexp_0(self, p):
         '''
-        booleanexp : objectkey operator objectkey
+        booleanexp : LEFTPAREN booleanexp RIGHTPAREN
+                   | booleanexp operator booleanexp
+                   | booleanexp operator objectkey
+                   | booleanexp operator number
+                   | objectkey operator booleanexp
+                   | objectkey operator function
+                   | objectkey operator objectbrackets
+                   | objectkey operator objectkey
                    | objectkey operator number
+                   | function operator number
+                   | function operator STRING
+                   | function operator function
+                   | function operator objectkey
                    | number operator objectkey
+                   | BOOL operator objectkey
+                   | objectkey operator BOOL
+                   | objectkey operator ternary
         '''
         if DEBUG:
             self.print_p(p)
-        p[0] = str(p[1]) + p[2] + str(p[3])
+        p[0] = self.flatten(p[1]) + p[2] + self.flatten(p[3])
 
     def p_block_0(self, p):
         "block : objectkey object"
@@ -341,6 +488,7 @@ class HclParser(object):
     def p_function_0(self, p):
         '''
         function : IDENTIFIER LEFTPAREN listitems RIGHTPAREN
+                 | IDENTIFIER LEFTPAREN list RIGHTPAREN
                  | IDENTIFIER LEFTPAREN list_of_lists RIGHTPAREN
         '''
         if DEBUG:
@@ -351,6 +499,7 @@ class HclParser(object):
     def p_function_1(self, p):
         '''
         function : IDENTIFIER LEFTPAREN listitems COMMA RIGHTPAREN
+                 | IDENTIFIER LEFTPAREN list COMMA RIGHTPAREN
                  | IDENTIFIER LEFTPAREN list_of_lists COMMA RIGHTPAREN
         '''
         if DEBUG:
@@ -387,9 +536,11 @@ class HclParser(object):
                 + "}"
             )
         elif type(value) is list:
-            returnValue = ",".join(self.flatten(v) for v in value)
+            returnValue = ",".join(self.flatten(v) for v in value) if value else "[]"
         elif type(value) is tuple:
             returnValue = " ".join(self.flatten(v) for v in value)
+        elif type(value) is not str:
+            returnValue = str(value)
         else:
             returnValue = value
         return returnValue
@@ -398,6 +549,7 @@ class HclParser(object):
         '''
         listitems : listitem
                   | function
+                  | forexp
                   | object COMMA
                   | objectkey COMMA
         '''
@@ -409,6 +561,7 @@ class HclParser(object):
         '''
         listitems : listitems COMMA listitem
                   | listitems COMMA function
+                  | listitems COMMA ternary
                   | listitems COMMA objectkey
         '''
         if DEBUG:
@@ -422,6 +575,11 @@ class HclParser(object):
                   | objectkey COMMA objectkey
                   | objectkey COMMA object
                   | objectkey COMMA list
+                  | objectkey COMMA ternary
+                  | objectkey COMMA number
+                  | objectkey COMMA function
+                  | objectkey COMMA BOOL
+                  | list COMMA objectkey
         '''
         if DEBUG:
             self.print_p(p)
@@ -447,13 +605,17 @@ class HclParser(object):
     def p_listitem_0(self, p):
         '''
         listitem : number
+                 | BOOL
                  | object
                  | objectkey
                  | objectbrackets
+                 | ternary
+                 | booleanexp
+                 | list
         '''
         if DEBUG:
             self.print_p(p)
-        p[0] = p[1]
+        p[0] = self.flatten(p[1])
 
     def p_listitem_1(self, p):
         '''
@@ -462,6 +624,14 @@ class HclParser(object):
         if DEBUG:
             self.print_p(p)
         p[0] = p[1] + p[2] + p[3]
+
+    def p_listitem_2(self, p):
+        '''
+        listitem : LEFTBRACKET listitem RIGHTBRACKET
+        '''
+        if DEBUG:
+            self.print_p(p)
+        p[0] = p[1] + self.flatten(p[2]) + p[3]
 
     def p_number_0(self, p):
         "number : int"

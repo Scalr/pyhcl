@@ -58,6 +58,10 @@ class Lexer(object):
         'NE',
         'LE',
         'GE',
+        'AND',
+        'OR',
+        'NOT',
+        'EQGT'
     )
 
     states = (
@@ -139,6 +143,22 @@ class Lexer(object):
 
     def t_GE(self, t):
         r'>='
+        return t
+
+    def t_AND(self, t):
+        r'&&'
+        return t
+
+    def t_OR(self, t):
+        r'\|\|'
+        return t
+
+    def t_NOT(self, t):
+        r'!'
+        return t
+
+    def t_EQGT(self, t):
+        r'=>'
         return t
 
     def t_IDENTIFIER(self, t):
