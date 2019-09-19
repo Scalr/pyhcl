@@ -39,6 +39,7 @@ FIXTURES = [
     ('terraform_heroku.hcl', 'terraform_heroku.json', None),
     ('structure_list_deep.hcl','structure_list_deep.json', None),
     ('heredoc_terminator_same_line.hcl','heredoc_terminator_same_line.json', None),
+    ('terraform0.12syntax2.hcl','terraform0.12syntax2.json', None),
 ]
 
 

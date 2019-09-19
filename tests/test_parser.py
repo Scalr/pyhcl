@@ -68,6 +68,10 @@ PARSE_FIXTURES = [
         "conditional_operator.hcl",
         False,
     ),
+    (
+        "terraform0.12syntax2.hcl",
+        False,
+    ),
 ]
 
 @pytest.mark.parametrize("hcl_fname,invalid", PARSE_FIXTURES)
