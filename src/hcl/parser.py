@@ -221,12 +221,12 @@ class HclParser(object):
     def p_forexp_0(self, p):
         '''
         forexp : LEFTBRACKET objectkey objectkey objectkey objectkey COLON forexp RIGHTBRACKET
-                       | LEFTBRACKET objectkey listitems objectkey objectkey COLON forexp RIGHTBRACKET
-                       | LEFTBRACKET objectkey objectkey objectkey function COLON function RIGHTBRACKET
-                       | LEFTBRACKET objectkey objectkey objectkey ternary COLON object RIGHTBRACKET
-                       | LEFTBRACKET objectkey objectkey objectkey objectkey COLON objectkey RIGHTBRACKET
-                       | LEFTBRACKET objectkey objectkey objectkey objectkey COLON function RIGHTBRACKET
-                       | LEFTBRACKET objectkey objectkey objectkey objectkey COLON object RIGHTBRACKET
+               | LEFTBRACKET objectkey listitems objectkey objectkey COLON forexp RIGHTBRACKET
+               | LEFTBRACKET objectkey objectkey objectkey function COLON function RIGHTBRACKET
+               | LEFTBRACKET objectkey objectkey objectkey ternary COLON object RIGHTBRACKET
+               | LEFTBRACKET objectkey objectkey objectkey objectkey COLON objectkey RIGHTBRACKET
+               | LEFTBRACKET objectkey objectkey objectkey objectkey COLON function RIGHTBRACKET
+               | LEFTBRACKET objectkey objectkey objectkey objectkey COLON object RIGHTBRACKET
         '''
         if DEBUG:
             self.print_p(p)
@@ -236,8 +236,8 @@ class HclParser(object):
     def p_forexp_1(self, p):
         '''
         forexp : LEFTBRACE objectkey objectkey objectkey objectkey COLON objectkey EQGT objectkey RIGHTBRACE
-                       | LEFTBRACE objectkey objectkey objectkey objectkey COLON objectkey EQGT function RIGHTBRACE
-                       | LEFTBRACKET objectkey objectkey objectkey objectkey COLON objectkey objectkey booleanexp RIGHTBRACKET
+               | LEFTBRACE objectkey objectkey objectkey objectkey COLON objectkey EQGT function RIGHTBRACE
+               | LEFTBRACKET objectkey objectkey objectkey objectkey COLON objectkey objectkey booleanexp RIGHTBRACKET
         '''
         if DEBUG:
             self.print_p(p)
@@ -390,7 +390,7 @@ class HclParser(object):
         '''
         if DEBUG:
             self.print_p(p)
-        p[0] = self.flatten(p[1]) + p[2] + self.flatten(p[3]) + p[4] + self.flatten(p[5])
+        p[0] = str(p[1]) + p[2] + str(p[3]) + p[4] + str(p[5])
 
     def p_operator_0(self, p):
         '''
@@ -494,7 +494,7 @@ class HclParser(object):
         if DEBUG:
             self.print_p(p)
 
-        p[0] = p[1] + p[2] + self.flatten(p[3]) + p[4]
+        p[0] = p[1] + p[2] + self.flatten(p[3], False) + p[4]
 
     def p_function_1(self, p):
         '''
@@ -527,7 +527,7 @@ class HclParser(object):
             p[1] + p[2] + p[3] + self.flatten(p[4]) + p[5] + p[6] + p[7] + p[8] + p[9]
         )
 
-    def flatten(self, value):
+    def flatten(self, value, recursive=True):
         returnValue = ""
         if type(value) is dict:
             returnValue = (
@@ -536,9 +536,9 @@ class HclParser(object):
                 + "}"
             )
         elif type(value) is list:
-            returnValue = ",".join(self.flatten(v) for v in value) if value else "[]"
+            returnValue = ",".join(self.flatten(v) if recursive else str(v) for v in value) if value else "[]"
         elif type(value) is tuple:
-            returnValue = " ".join(self.flatten(v) for v in value)
+            returnValue = " ".join(self.flatten(v) if recursive else str(v) for v in value)
         elif type(value) is not str:
             returnValue = str(value)
         else:
@@ -580,6 +580,7 @@ class HclParser(object):
                   | objectkey COMMA function
                   | objectkey COMMA BOOL
                   | list COMMA objectkey
+                  | list_of_lists COMMA objectkey
         '''
         if DEBUG:
             self.print_p(p)
@@ -615,7 +616,7 @@ class HclParser(object):
         '''
         if DEBUG:
             self.print_p(p)
-        p[0] = self.flatten(p[1])
+        p[0] = p[1]
 
     def p_listitem_1(self, p):
         '''
@@ -624,14 +625,6 @@ class HclParser(object):
         if DEBUG:
             self.print_p(p)
         p[0] = p[1] + p[2] + p[3]
-
-    def p_listitem_2(self, p):
-        '''
-        listitem : LEFTBRACKET listitem RIGHTBRACKET
-        '''
-        if DEBUG:
-            self.print_p(p)
-        p[0] = p[1] + self.flatten(p[2]) + p[3]
 
     def p_number_0(self, p):
         "number : int"

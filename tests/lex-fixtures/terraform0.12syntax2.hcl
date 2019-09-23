@@ -169,3 +169,11 @@ binded.member_id if binded.folder_name == local.bindings_formatted[count.index].
 
 project_list = var.projects == [] ? [
   var.project] : var.projects
+
+
+tags = concat(
+  ["gke-${var.name}"],
+  ["gke-${var.name}-${var.node_pools[count.index]["name"]}"],
+  var.node_pools_tags["all"],
+  var.node_pools_tags[var.node_pools[count.index]["name"]],
+)
