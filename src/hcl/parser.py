@@ -1,5 +1,6 @@
 from os.path import abspath, dirname, exists, join
 import sys
+import os
 
 from .lexer import Lexer
 from ply import lex, yacc
@@ -13,7 +14,7 @@ DEBUG = False
 # In these cases, just use a temporary directory, it doesn't take too long to
 # generate the tables anyways...
 
-if exists(dirname(__file__)):
+if exists(dirname(__file__)) and os.access(dirname(__file__), os.W_OK):
     pickle_file = abspath(join(dirname(__file__), 'parsetab.dat'))
 else:
     import tempfile
