@@ -8,8 +8,8 @@
   "structure6": "foo&&bar&&length(baz)>0&&var.foo&&False==var.bar?1:0",
   "structure6_1": "foo&&length(bar)>0&&False==baz||length(var.foo)>=length(var.bar)?length(var.baz):0",
   "structure7": "foo.bar.*.id[count.index]",
-  "structure7_1": "concat(foo,)[count.index]",
-  "structure7_2": "concat(foo.bar.*.id,[])[0]",
+  "structure7_1": "concat(foo,[''])[count.index]",
+  "structure7_2": "concat(foo.bar.*.id,[''])[0]",
   "structure8": "split(,,var.reuse_nat_ips?join(,,var.external_nat_ip_ids):join(,,aws_eip.nat.*.id))",
   "structure8_1": "element(coalescelist(aws_route_table.database.*.id,aws_route_table.private.*.id),var.single_nat_gateway||var.create_database_subnet_route_table?0:count.index)",
   "structure9": [
@@ -25,8 +25,8 @@
   "structure15_1": "[for foo in bar:fooiffoo.baz>0]",
   "structure15_2": "[for foo in bar:{baz:upper(foo)}]",
   "structure15_3": "{for foo in bar:baz=>upper(foo)}",
-  "structure15_4": "[for foo in lookup(bar[count.index],baz,0)>0?[{type:lookup(var.foo[count.index],type,),count:lookup(var.foo[count.index],count,0)}]:[]:{type:foo[type],count:foo[count]}]",
-  "structure15_5": "distinct(flatten([for service_account in var.service_accounts:[for value in flatten([for k,v in var.bindings:[for val in v:{role_name:k,member_id:val}]]):merge({service_account_name:service_account},value)]]))",
+  "structure15_4": "[for foo in lookup(bar[count.index],baz,0)>0?[{'type': 'lookup(var.foo[count.index],type,)', 'count': 'lookup(var.foo[count.index],count,0)'}]:[]:{type:foo[type],count:foo[count]}]",
+  "structure15_5": "distinct(flatten([for service_account in var.service_accounts:[for value in flatten([for k,v in var.bindings:[for val in v:{role_name:k,member_id:val}]]):merge({'service_account_name': 'service_account'},value)]]))",
   "structure16": "length(foo) + length(bar) - length(baz) * length(foo) / length(baz)",
   "structure17": "distinct(foo.bar[*].baz)"
 }
