@@ -487,6 +487,15 @@ class HclParser(object):
 
     def p_function_0(self, p):
         '''
+        function : IDENTIFIER LEFTPAREN RIGHTPAREN
+        '''
+        if DEBUG:
+            self.print_p(p)
+
+        p[0] = p[1] + p[2] + p[3]
+
+    def p_function_1(self, p):
+        '''
         function : IDENTIFIER LEFTPAREN listitems RIGHTPAREN
                  | IDENTIFIER LEFTPAREN list RIGHTPAREN
                  | IDENTIFIER LEFTPAREN list_of_lists RIGHTPAREN
@@ -496,7 +505,7 @@ class HclParser(object):
 
         p[0] = p[1] + p[2] + self.flatten(p[3], False) + p[4]
 
-    def p_function_1(self, p):
+    def p_function_2(self, p):
         '''
         function : IDENTIFIER LEFTPAREN listitems COMMA RIGHTPAREN
                  | IDENTIFIER LEFTPAREN list COMMA RIGHTPAREN
@@ -507,7 +516,7 @@ class HclParser(object):
 
         p[0] = p[1] + p[2] + self.flatten(p[3]) + p[5]
 
-    def p_function_2(self, p):
+    def p_function_3(self, p):
         '''
         function : IDENTIFIER LEFTPAREN list PERIOD PERIOD PERIOD RIGHTPAREN
         '''
