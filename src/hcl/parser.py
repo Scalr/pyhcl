@@ -45,7 +45,6 @@ class HclParser(object):
         'FLOAT',
         'NUMBER',
         'COMMA',
-        'COMMAEND',
         'IDENTIFIER',
         'EQUAL',
         'STRING',
@@ -525,7 +524,7 @@ class HclParser(object):
 
         p[0] = p[1] + p[2] + self.flatten(p[3]) + p[4] + p[5] + p[6] + p[7]
 
-    def p_function_3(self, p):
+    def p_function_4(self, p):
         '''
         function : IDENTIFIER LEFTPAREN LEFTBRACKET list_of_lists RIGHTBRACKET PERIOD PERIOD PERIOD RIGHTPAREN
         '''
