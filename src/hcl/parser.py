@@ -474,7 +474,7 @@ class HclParser(object):
         '''
         if DEBUG:
             self.print_p(p)
-        p[0] = p[1], p[3]
+        p[0] = [p[1]] + [p[3]]
 
     def p_list_of_lists_1(self, p):
         '''
@@ -482,7 +482,7 @@ class HclParser(object):
         '''
         if DEBUG:
             self.print_p(p)
-        p[0] = p[1] + (p[3],)
+        p[0] = p[1] + [p[3]]
 
     def p_function_0(self, p):
         '''
@@ -567,6 +567,14 @@ class HclParser(object):
 
     def p_listitems_1(self, p):
         '''
+        listitems : list_of_lists
+        '''
+        if DEBUG:
+            self.print_p(p)
+        p[0] = p[1]
+
+    def p_listitems_2(self, p):
+        '''
         listitems : listitems COMMA listitem
                   | listitems COMMA function
                   | listitems COMMA ternary
@@ -576,7 +584,7 @@ class HclParser(object):
             self.print_p(p)
         p[0] = p[1] + [p[3]]
 
-    def p_listitems_2(self, p):
+    def p_listitems_3(self, p):
         '''
         listitems : object COMMA object
                   | object COMMA objectkey
@@ -594,7 +602,7 @@ class HclParser(object):
             self.print_p(p)
         p[0] = [p[1], p[3]]
 
-    def p_listitems_3(self, p):
+    def p_listitems_4(self, p):
         '''
         listitems : objectkey COMMA IDENTIFIER ASTERISK_PERIOD IDENTIFIER
         '''
@@ -602,7 +610,7 @@ class HclParser(object):
             self.print_p(p)
         p[0] = [p[1], p[3] + p[4] + p[5]]
 
-    def p_listitems_4(self, p):
+    def p_listitems_5(self, p):
         '''
         listitems : objectkey list
         '''

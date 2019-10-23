@@ -1,3 +1,4 @@
+list_of_lists = [["a"], ["b"], [], [0], [bar ? true : false], [length(bar)]]
 foo = tok1 ? tok2 ? "tok3" : "tok4" || "tok5" ? "tok6" : "tok7" : "tok8"
 foo = "bar" ? "foo" : "baz"
 baz = ! foo
