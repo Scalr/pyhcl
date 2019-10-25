@@ -82,3 +82,6 @@ structure15_5 = distinct(flatten([for service_account in var.service_accounts : 
 structure16 = length(foo) + length(bar) - length(baz)*length(foo)/length(baz)
 # asterisk in brackets syntax to retrieve list
 structure17 = distinct(foo.bar[*].baz)
+
+# list of lists
+structure18 = [["string"], [0], [], [length(foo)], [bar ? true : false]]
