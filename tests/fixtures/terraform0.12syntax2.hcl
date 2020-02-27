@@ -78,6 +78,8 @@ structure15_5 = distinct(flatten([for service_account in var.service_accounts : 
   "service_account_name" = service_account
 }, value)]]))
 
+structure15_6 =  [for k, v in bar : foo]
+
 # arithmetic operations with functions
 structure16 = length(foo) + length(bar) - length(baz)*length(foo)/length(baz)
 # asterisk in brackets syntax to retrieve list

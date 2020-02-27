@@ -220,6 +220,7 @@ class HclParser(object):
     def p_forexp_0(self, p):
         '''
         forexp : LEFTBRACKET objectkey objectkey objectkey objectkey COLON forexp RIGHTBRACKET
+               | LEFTBRACKET objectkey listitems objectkey objectkey COLON objectkey RIGHTBRACKET
                | LEFTBRACKET objectkey listitems objectkey objectkey COLON forexp RIGHTBRACKET
                | LEFTBRACKET objectkey objectkey objectkey function COLON function RIGHTBRACKET
                | LEFTBRACKET objectkey objectkey objectkey ternary COLON object RIGHTBRACKET
