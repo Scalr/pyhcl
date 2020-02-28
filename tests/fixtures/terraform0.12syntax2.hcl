@@ -88,3 +88,6 @@ structure17 = distinct(foo.bar[*].baz)
 
 # list of lists
 structure18 = [["string"], [0], [], [length(foo)], [bar ? true : false]]
+
+# object as first function argument
+structure19 = merge({}, foo(bar))

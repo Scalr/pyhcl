@@ -31,5 +31,6 @@
   "structure15_6": "[for k,v in bar:foo]",
   "structure16": "length(foo) + length(bar) - length(baz) * length(foo) / length(baz)",
   "structure17": "distinct(foo.bar[*].baz)",
-  "structure18": [["string"], [0], [], ["length(foo)"], ["bar?True:False"]]
+  "structure18": [["string"], [0], [], ["length(foo)"], ["bar?True:False"]],
+  "structure19": "merge({},foo(bar))"
 }

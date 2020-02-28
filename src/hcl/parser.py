@@ -590,6 +590,7 @@ class HclParser(object):
         '''
         listitems : object COMMA object
                   | object COMMA objectkey
+                  | object COMMA function
                   | objectkey COMMA objectkey
                   | objectkey COMMA object
                   | objectkey COMMA list
