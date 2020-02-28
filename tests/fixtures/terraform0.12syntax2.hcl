@@ -36,7 +36,8 @@ structure8_1 = element(
 
 structure9 = [
   foo.bar.baz.names[0],
-  foo.bar.baz.names[1]
+  foo.bar.baz.names[1],
+  foo.bar[0].baz[0].names[1].id
 ]
 
 # empty list as function argument

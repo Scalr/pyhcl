@@ -14,7 +14,8 @@
   "structure8_1": "element(coalescelist(aws_route_table.database.*.id,aws_route_table.private.*.id),var.single_nat_gateway||var.create_database_subnet_route_table?0:count.index)",
   "structure9": [
     "foo.bar.baz.names[0]",
-    "foo.bar.baz.names[1]"
+    "foo.bar.baz.names[1]",
+    "foo.bar[0].baz[0].names[1].id"
   ],
   "structure10": "lookup(foo,bar,[])",
   "structure11": "element(split(-,foo),0)==bar",

@@ -263,6 +263,7 @@ class HclParser(object):
         '''
         objectbrackets : IDENTIFIER LEFTBRACKET objectkey RIGHTBRACKET PERIOD IDENTIFIER
                        | IDENTIFIER LEFTBRACKET NUMBER RIGHTBRACKET PERIOD IDENTIFIER
+                       | IDENTIFIER LEFTBRACKET NUMBER RIGHTBRACKET PERIOD objectbrackets
                        | IDENTIFIER LEFTBRACKET MULTIPLY RIGHTBRACKET PERIOD IDENTIFIER
         '''
         if DEBUG:
