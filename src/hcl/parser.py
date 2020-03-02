@@ -415,6 +415,7 @@ class HclParser(object):
                    | booleanexp operator booleanexp
                    | booleanexp operator objectkey
                    | booleanexp operator number
+                   | booleanexp operator function
                    | objectkey operator booleanexp
                    | objectkey operator function
                    | objectkey operator objectbrackets
