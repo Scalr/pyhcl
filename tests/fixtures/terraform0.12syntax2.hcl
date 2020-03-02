@@ -91,3 +91,4 @@ structure18 = [["string"], [0], [], [length(foo)], [bar ? true : false]]
 
 # object as first function argument
 structure19 = merge({}, foo(bar))
+structure20 = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", null) != null) ? list(var.worker_groups_launch_template[count.index]) : []

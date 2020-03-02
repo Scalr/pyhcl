@@ -353,6 +353,7 @@ class HclParser(object):
                 | NUMBER QMARK NUMBER COLON NUMBER
                 | BOOL QMARK BOOL COLON BOOL
                 | BOOL QMARK objectkey COLON objectkey
+                | booleanexp QMARK listitem COLON list
                 | booleanexp QMARK listitem COLON listitem
                 | booleanexp QMARK listitem COLON function
                 | booleanexp QMARK objectkey COLON number
@@ -360,6 +361,7 @@ class HclParser(object):
                 | booleanexp QMARK objectkey COLON function
                 | booleanexp QMARK function COLON objectkey
                 | booleanexp QMARK function COLON number
+                | booleanexp QMARK function COLON list
                 | booleanexp QMARK function COLON BOOL
                 | booleanexp QMARK number COLON objectkey
                 | booleanexp QMARK number COLON number
@@ -370,7 +372,6 @@ class HclParser(object):
                 | booleanexp QMARK BOOL COLON function
                 | booleanexp QMARK BOOL COLON BOOL
                 | booleanexp QMARK ternary COLON objectkey
-
                 | function QMARK listitem COLON listitem
                 | function QMARK objectkey COLON number
                 | function QMARK objectkey COLON BOOL

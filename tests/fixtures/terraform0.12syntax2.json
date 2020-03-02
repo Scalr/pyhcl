@@ -32,5 +32,6 @@
   "structure16": "length(foo) + length(bar) - length(baz) * length(foo) / length(baz)",
   "structure17": "distinct(foo.bar[*].baz)",
   "structure18": [["string"], [0], [], ["length(foo)"], ["bar?True:False"]],
-  "structure19": "merge({},foo(bar))"
+  "structure19": "merge({},foo(bar))",
+  "structure20": "(lookup(var.worker_groups_launch_template[count.index],override_instance_types,null)!=null)||(lookup(var.worker_groups_launch_template[count.index],on_demand_allocation_strategy,null)!=null)?list(var.worker_groups_launch_template[count.index]):[]"
 }
