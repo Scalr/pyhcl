@@ -220,6 +220,7 @@ class HclParser(object):
     def p_forexp_0(self, p):
         '''
         forexp : LEFTBRACKET objectkey objectkey objectkey objectkey COLON forexp RIGHTBRACKET
+               | LEFTBRACKET objectkey listitems objectkey objectkey COLON objectkey RIGHTBRACKET
                | LEFTBRACKET objectkey listitems objectkey objectkey COLON forexp RIGHTBRACKET
                | LEFTBRACKET objectkey objectkey objectkey function COLON function RIGHTBRACKET
                | LEFTBRACKET objectkey objectkey objectkey ternary COLON object RIGHTBRACKET
@@ -262,6 +263,7 @@ class HclParser(object):
         '''
         objectbrackets : IDENTIFIER LEFTBRACKET objectkey RIGHTBRACKET PERIOD IDENTIFIER
                        | IDENTIFIER LEFTBRACKET NUMBER RIGHTBRACKET PERIOD IDENTIFIER
+                       | IDENTIFIER LEFTBRACKET NUMBER RIGHTBRACKET PERIOD objectbrackets
                        | IDENTIFIER LEFTBRACKET MULTIPLY RIGHTBRACKET PERIOD IDENTIFIER
         '''
         if DEBUG:
@@ -351,6 +353,7 @@ class HclParser(object):
                 | NUMBER QMARK NUMBER COLON NUMBER
                 | BOOL QMARK BOOL COLON BOOL
                 | BOOL QMARK objectkey COLON objectkey
+                | booleanexp QMARK listitem COLON list
                 | booleanexp QMARK listitem COLON listitem
                 | booleanexp QMARK listitem COLON function
                 | booleanexp QMARK objectkey COLON number
@@ -358,6 +361,7 @@ class HclParser(object):
                 | booleanexp QMARK objectkey COLON function
                 | booleanexp QMARK function COLON objectkey
                 | booleanexp QMARK function COLON number
+                | booleanexp QMARK function COLON list
                 | booleanexp QMARK function COLON BOOL
                 | booleanexp QMARK number COLON objectkey
                 | booleanexp QMARK number COLON number
@@ -368,7 +372,6 @@ class HclParser(object):
                 | booleanexp QMARK BOOL COLON function
                 | booleanexp QMARK BOOL COLON BOOL
                 | booleanexp QMARK ternary COLON objectkey
-
                 | function QMARK listitem COLON listitem
                 | function QMARK objectkey COLON number
                 | function QMARK objectkey COLON BOOL
@@ -412,6 +415,7 @@ class HclParser(object):
                    | booleanexp operator booleanexp
                    | booleanexp operator objectkey
                    | booleanexp operator number
+                   | booleanexp operator function
                    | objectkey operator booleanexp
                    | objectkey operator function
                    | objectkey operator objectbrackets
@@ -588,6 +592,7 @@ class HclParser(object):
         '''
         listitems : object COMMA object
                   | object COMMA objectkey
+                  | object COMMA function
                   | objectkey COMMA objectkey
                   | objectkey COMMA object
                   | objectkey COMMA list

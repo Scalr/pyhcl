@@ -36,7 +36,8 @@ structure8_1 = element(
 
 structure9 = [
   foo.bar.baz.names[0],
-  foo.bar.baz.names[1]
+  foo.bar.baz.names[1],
+  foo.bar[0].baz[0].names[1].id
 ]
 
 # empty list as function argument
@@ -78,6 +79,8 @@ structure15_5 = distinct(flatten([for service_account in var.service_accounts : 
   "service_account_name" = service_account
 }, value)]]))
 
+structure15_6 =  [for k, v in bar : foo]
+
 # arithmetic operations with functions
 structure16 = length(foo) + length(bar) - length(baz)*length(foo)/length(baz)
 # asterisk in brackets syntax to retrieve list
@@ -85,3 +88,12 @@ structure17 = distinct(foo.bar[*].baz)
 
 # list of lists
 structure18 = [["string"], [0], [], [length(foo)], [bar ? true : false]]
+
+# object as first function argument
+structure19 = merge({}, foo(bar))
+
+# ternary with lists
+structure20 = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", null) != null) ? list(var.worker_groups_launch_template[count.index]) : []
+
+# boolean expressions with function returns
+structure21 = var.create_vpc && length(var.public_subnets) > 0 && (false == var.one_nat_gateway_per_az || length(var.public_subnets)) >= length(var.azs) ? length(var.public_subnets) : 0
