@@ -756,11 +756,16 @@ class HclParser(object):
         except:
             expected = ""
 
+        if len(self.yacc.symstack) == 1 and self.yacc.symstack[0].type == '$end':
+            return
+
         if p is not None:
-            msg = "Line %d, column %d: unexpected %s%s" % (
+            data = p.lexer.lexdata if hasattr(p.lexer, 'lexdata') else p.lexer.lex.lexdata
+            col_num = p.lexpos - data.rfind('\n', 0, p.lexpos) - 1
+            msg = "Line %d, column %d: unexpected '%s'%s" % (
                 p.lineno,
-                p.lexpos,
-                p.type,
+                col_num,
+                p.value,
                 expected,
             )
         else:
