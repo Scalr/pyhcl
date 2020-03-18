@@ -27,8 +27,7 @@ def isHcl(s):
         
         :param s: String that may contain HCL or JSON
         
-        :returns: True if HCL, False if JSON, raises ValueError
-                  if neither
+        :returns: True if HCL, False if JSON
     '''
     for c in s:
         if c.isspace():
@@ -38,8 +37,7 @@ def isHcl(s):
             return False
         else:
             return True
-
-    raise ValueError("No HCL object could be decoded")
+    return True
 
 
 def load(fp):
